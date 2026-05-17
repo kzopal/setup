@@ -61,18 +61,6 @@ set_fonts() {
 	gsettings_wrapper set org.gnome.desktop.interface monospace-font-name "Monospace 10"
 }
 
-setup_vanilla_gnome() {
-    apt install qgnomeplatform-qt5 -y
-    apt install qgnomeplatform-qt6 -y
-    apt install gnome-session fonts-cantarell adwaita-icon-theme gnome-backgrounds gnome-tweaks vanilla-gnome-default-settings gnome-shell-extension-manager -y && apt remove ubuntu-session yaru-theme-gnome-shell yaru-theme-gtk yaru-theme-icon yaru-theme-sound -y
-    set_fonts
-    restore_background
-}
-
-restore_background() {
-    gsettings_wrapper set org.gnome.desktop.background picture-uri 'file:///usr/share/backgrounds/gnome/blobs-l.svg'
-    gsettings_wrapper set org.gnome.desktop.background picture-uri-dark 'file:///usr/share/backgrounds/gnome/blobs-l.svg'
-}
 
 install_adwgtk3() {    
     wget -O /tmp/adw-gtk3.tar.xz https://github.com/lassekongo83/adw-gtk3/releases/download/v5.10/adw-gtk3v5.10.tar.xz
@@ -109,6 +97,104 @@ Pin-Priority: 1000
 ' > /etc/apt/preferences.d/mozilla
     apt update
     apt install firefox -y
+}
+
+configure_firefox() {
+    local real_user real_home firefox_dir
+
+    real_user="${SUDO_USER:-$(logname 2>/dev/null || echo "$USER")}"
+    real_home="$(eval echo "~$real_user")"
+
+    msg "Setting up Firefox distribution policies..."
+    mkdir -p /usr/lib/firefox/distribution
+
+    cat > /usr/lib/firefox/distribution/policies.json << 'POLICIES_EOF'
+{
+  "policies": {
+    "ExtensionSettings": {
+      "uBlock0@raymondhill.net": {
+        "installation_mode": "force_installed",
+        "install_url": "https://addons.mozilla.org/firefox/downloads/latest/ublock-origin/latest.xpi"
+      }
+    },
+    "Extensions": {
+      "Install": [
+        "https://addons.mozilla.org/firefox/downloads/latest/tokyo-night-milav/latest.xpi"
+      ]
+    }
+  }
+}
+POLICIES_EOF
+
+    msg "Setting Firefox dark mode preferences..."
+    mkdir -p /etc/firefox
+    cat > /etc/firefox/syspref.js << 'SYSPREF_EOF'
+pref("ui.systemUsesDarkTheme", 1);
+SYSPREF_EOF
+
+    msg "Downloading arkenfox user.js..."
+    firefox_dir="$real_home/.mozilla/firefox"
+    mkdir -p "$firefox_dir"
+
+    local profiles_ini="$firefox_dir/profiles.ini"
+    local profile_path=""
+
+    if [ -f "$profiles_ini" ]; then
+        profile_path=$(grep -E "^Path=" "$profiles_ini" | head -1 | cut -d= -f2)
+    fi
+
+    if [ -z "$profile_path" ]; then
+        profile_path="default-release"
+        mkdir -p "$firefox_dir/$profile_path"
+        cat > "$profiles_ini" << PROFILES_EOF
+[General]
+StartWithLastProfile=1
+
+[Profile0]
+Name=default
+IsRelative=1
+Path=$profile_path
+Default=yes
+PROFILES_EOF
+    fi
+
+    wget -qO "$firefox_dir/$profile_path/user.js" https://raw.githubusercontent.com/arkenfox/user.js/master/user.js
+    chown -R "$real_user:$real_user" "$firefox_dir" 2>/dev/null || true
+
+    msg "Firefox configured with arkenfox user.js, uBlock Origin, and Tokyo Night theme."
+}
+
+setup_bashrc() {
+    local real_user real_home
+
+    real_user="${SUDO_USER:-$(logname 2>/dev/null || echo "$USER")}"
+    real_home="$(eval echo "~$real_user")"
+
+    msg "Setting up custom .bashrc..."
+
+    [ -f "$real_home/.bashrc" ] && cp "$real_home/.bashrc" "$real_home/.bashrc.bak"
+
+    cat > "$real_home/.bashrc" << 'BASHRC_EOF'
+# ~/.bashrc
+
+[ -z "$PS1" ] && return
+
+HISTCONTROL=ignoreboth
+shopt -s histappend
+shopt -s checkwinsize
+
+alias ls='ls --color'
+LS_COLORS='di=1;35:fi=0:ln=31:pi=5:so=5:bd=5:cd=5:or=31:mi=0:ex=35:*.rpm=90:*.png=35:*.gif=36:*.jpg=35:*.c=92:*.jar=33:*.py=93:*.h=90:*.txt=94:*.doc=104:*.docx=104:*.odt=104:*.csv=102:*.xlsx=102:*.xlsm=102:*.rb=31:*.cpp=92:*.sh=92:*.html=96:*.zip=4;33:*.tar.gz=4;33:*.mp4=105:*.mp3=106'
+export LS_COLORS HISTSIZE= HISTFILESIZE=
+
+export PS1="\[$(tput bold)\]\[$(tput setaf 1)\][\[$(tput setaf 3)\]\u\[$(tput setaf 2)\]@\[$(tput setaf 4)\]\h \[$(tput setaf 5)\]\W\[$(tput setaf 1)\]]\[$(tput setaf 7)\]\\$ \[$(tput sgr0)\]"
+
+stty -ixon
+BASHRC_EOF
+
+    chown "$real_user:$real_user" "$real_home/.bashrc" "$real_home/.bashrc.bak" 2>/dev/null || true
+
+    msg "Custom .bashrc installed."
 }
 
 ask_reboot() {
@@ -148,125 +234,3 @@ check_root_user() {
 enable_appindicator() {
     gsettings_wrapper set org.gnome.shell enabled-extensions "['ubuntu-appindicators@ubuntu.com']"
 }
-
-print_banner() {
-    echo '                                                                                                                                   
-    ▐            ▗            ▐     ▐       ▝▜  ▝▜      ▐    ▝   ▗   ▗  
-▗ ▗ ▐▄▖ ▗ ▗ ▗▗▖ ▗▟▄ ▗ ▗      ▄▟  ▄▖ ▐▄▖ ▗ ▗  ▐   ▐   ▄▖ ▐▗▖ ▗▄  ▗▟▄  ▐  
-▐ ▐ ▐▘▜ ▐ ▐ ▐▘▐  ▐  ▐ ▐     ▐▘▜ ▐▘▐ ▐▘▜ ▐ ▐  ▐   ▐  ▐ ▝ ▐▘▐  ▐   ▐   ▐  
-▐ ▐ ▐ ▐ ▐ ▐ ▐ ▐  ▐  ▐ ▐  ▀▘ ▐ ▐ ▐▀▀ ▐ ▐ ▐ ▐  ▐   ▐   ▀▚ ▐ ▐  ▐   ▐   ▝  
-▝▄▜ ▐▙▛ ▝▄▜ ▐ ▐  ▝▄ ▝▄▜     ▝▙█ ▝▙▞ ▐▙▛ ▝▄▜  ▝▄  ▝▄ ▝▄▞ ▐ ▐ ▗▟▄  ▝▄  ▐  
-                                                                                                      
- By @polkaulfield
- '
-}
-
-show_menu() {
-    echo 'Choose what to do: '
-    echo '1 - Apply everything (RECOMMENDED)'
-    echo '2 - Disable Ubuntu report'
-    echo '3 - Remove app crash popup'
-    echo '4 - Remove snaps and snapd'
-    echo '5 - Disable terminal ads (LTS versions)'
-    echo '6 - Install flathub and gnome-software'
-    echo '7 - Install firefox from the Mozilla repo'
-    echo '8 - Install vanilla GNOME session'
-    echo '9 - Install adw-gtk3 and morewaita'
-    echo 'q - Exit'
-    echo
-}
-
-main() {
-    check_root_user
-    while true; do
-        print_banner
-        show_menu
-        read -p 'Enter your choice: ' choice
-        case $choice in
-        1)
-            auto
-            msg 'Done!'
-            ask_reboot
-            ;;
-        2)
-            disable_ubuntu_report
-            msg 'Done!'
-            ;;
-        3)
-            remove_appcrash_popup
-            msg 'Done!'
-            ;;
-        4)
-            remove_snaps
-            msg 'Done!'
-            ask_reboot
-            ;;
-        5)
-            disable_terminal_ads
-            msg 'Done!'
-            ;;
-        6)
-            update_system
-            setup_flathub
-            msg 'Done!'
-            ask_reboot
-            ;;
-        7)
-            restore_firefox
-            msg 'Done!'
-            ;;
-        8)
-            update_system
-            setup_vanilla_gnome
-	    enable_appindicator
-            msg 'Done!'
-            ask_reboot
-            ;;
-
-        9)
-            update_system
-            install_adwgtk3
-            install_icons
-            msg 'Done!'
-            ask_reboot
-            ;;
-
-        q)
-            exit 0
-            ;;
-
-        *)
-            error_msg 'Wrong input!'
-            ;;
-        esac
-    done
-
-}
-
-auto() {
-    msg 'Updating system'
-    update_system
-    msg 'Disabling ubuntu report'
-    disable_ubuntu_report
-    msg 'Removing annoying appcrash popup'
-    remove_appcrash_popup
-    msg 'Removing terminal ads (if they are enabled)'
-    disable_terminal_ads
-    msg 'Deleting everything snap related'
-    remove_snaps
-    msg 'Setting up flathub'
-    setup_flathub
-    msg 'Restoring Firefox from mozilla repository'
-    restore_firefox
-    msg 'Installing vanilla Gnome session'
-    setup_vanilla_gnome
-    enable_appindicator
-    msg 'Install adw-gtk3'
-    install_adwgtk3
-    msg 'Installing MoreWaita icons'
-    install_icons
-    msg 'Cleaning up'
-    cleanup
-}
-
-(return 2> /dev/null) || main
