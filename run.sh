@@ -3,9 +3,9 @@
 # Stop the script if any error happens
 set -e
 
-# Download the ubuntu-debullshit script
+# Download the utils script
 echo "Downloading utils.sh..."
-wget -qO ubuntu-debullshit.sh https://raw.githubusercontent.com/kzopal/setup/refs/heads/main/utils.sh
+wget -qO utils.sh https://raw.githubusercontent.com/kzopal/setup/refs/heads/main/utils.sh
 
 # Download your main setup script
 echo "Downloading main.sh..."
