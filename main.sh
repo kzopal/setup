@@ -48,7 +48,7 @@ cleanup_desktop() {
     sudo apt purge gdm3 -y || true
 
     sudo apt remove ubuntu-session yaru-theme-gnome-shell yaru-theme-gtk yaru-theme-icon yaru-theme-sound -y
-    sudo apt remove gnome-*
+    sudo apt remove gnome-* -y
     sudo apt autoremove -y
 }
 
