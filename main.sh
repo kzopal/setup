@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-source ubuntu-debullshit.sh
+source utils.sh
 
 setup_display_manager() {
     echo "lightdm shared/default-x-display-manager select lightdm" | sudo debconf-set-selections
