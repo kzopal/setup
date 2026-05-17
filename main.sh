@@ -49,13 +49,18 @@ cd st
 #compile and install
 make
 sudo make clean install
+
+# Force 'st' as the default by wiping existing alternatives first
+sudo update-alternatives --remove-all x-terminal-emulator
+sudo update-alternatives --install /usr/bin/x-terminal-emulator x-terminal-emulator /usr/local/bin/st 50
+
 cd ~
 
 #wipe gdm3 and old desktop
 sudo apt purge gdm3 -y || true
 
 sudo apt remove ubuntu-session yaru-theme-gnome-shell yaru-theme-gtk yaru-theme-icon yaru-theme-sound -y
-
+sudo apt remove gnome-*
 sudo apt autoremove -y
 
 echo "Done. Reboot if necessary"
