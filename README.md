@@ -41,3 +41,10 @@ sudo bash -c "$(wget -qO- kzopal.github.io/setup/run.sh)"
 run.sh downloads utils.sh and main.sh, makes them executable, and
 starts the installation. Reboot when it's done to apply all changes and log
 into i3.
+
+# TODO
+
+fix needing to reboot a couple of times for no reason
+fix user.js not installed (theme and ublock are good tho)
+add a default wallpaper
+add network manager tray icon and funtionmality
