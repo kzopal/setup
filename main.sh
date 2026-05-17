@@ -2,65 +2,73 @@
 
 source ubuntu-debullshit.sh
 
-remove_appcrash_popup
-disable_terminal_ads
-disable_ubuntu_report
-remove_snaps
-update_system
-setup_flathub
-restore_firefox
+setup_display_manager() {
+    echo "lightdm shared/default-x-display-manager select lightdm" | sudo debconf-set-selections
 
-echo "lightdm shared/default-x-display-manager select lightdm" | sudo debconf-set-selections
+    sudo DEBIAN_FRONTEND=noninteractive apt install lightdm slick-greeter numlockx -y
+    #uncomment next line if somthing breaks
+    #echo -e "[Seat:*]\ngreeter-session=slick-greeter" | sudo tee /etc/lightdm/lightdm.conf
 
-#install lightdm non interactively
-sudo DEBIAN_FRONTEND=noninteractive apt install lightdm slick-greeter numlockx -y
-#uncomment next line if somthing breaks
-#echo -e "[Seat:*]\ngreeter-session=slick-greeter" | sudo tee /etc/lightdm/lightdm.conf
+    sudo systemctl enable lightdm
+}
 
-#do this before removing all the gdm stuff
-sudo systemctl enable lightdm
+install_packages() {
+    sudo add-apt-repository -y ppa:zhangsongcui3371/fastfetch
 
-#add fastfetch ppa
-sudo add-apt-repository -y ppa:zhangsongcui3371/fastfetch
+    sudo apt update
+    sudo apt install -y \
+        build-essential \
+        git \
+        libx11-dev \
+        libxft-dev \
+        libxext-dev \
+        pkg-config \
+        fonts-jetbrains-mono \
+        i3 \
+        htop \
+        fastfetch
+}
 
-#Install the build dependencies, JetBrains Mono font, and git
-sudo apt update
-sudo apt install -y \
-    build-essential \
-    git \
-    libx11-dev \
-    libxft-dev \
-    libxext-dev \
-    pkg-config \
-    fonts-jetbrains-mono \
-    i3 \
-    htop \
-    fastfetch
+build_st() {
+    cd /tmp
+    if [ -d "st" ]; then rm -rf st; fi
+    git clone https://github.com/kzopal/st.git
+    cd st
 
-#st section
+    make
+    sudo make clean install
 
-#clone kzopal/st to a temporary directory
-cd /tmp
-# Clear out any old 'st' folder from previous script runs so git clone doesn't fail
-if [ -d "st" ]; then rm -rf st; fi
-git clone https://github.com/kzopal/st.git
-cd st
+    sudo update-alternatives --remove-all x-terminal-emulator
+    sudo update-alternatives --install /usr/bin/x-terminal-emulator x-terminal-emulator /usr/local/bin/st 50
 
-#compile and install
-make
-sudo make clean install
+    cd ~
+}
 
-# Force 'st' as the default by wiping existing alternatives first
-sudo update-alternatives --remove-all x-terminal-emulator
-sudo update-alternatives --install /usr/bin/x-terminal-emulator x-terminal-emulator /usr/local/bin/st 50
+cleanup_desktop() {
+    sudo apt purge gdm3 -y || true
 
-cd ~
+    sudo apt remove ubuntu-session yaru-theme-gnome-shell yaru-theme-gtk yaru-theme-icon yaru-theme-sound -y
+    sudo apt remove gnome-*
+    sudo apt autoremove -y
+}
 
-#wipe gdm3 and old desktop
-sudo apt purge gdm3 -y || true
+main() {
+    remove_appcrash_popup
+    disable_terminal_ads
+    disable_ubuntu_report
+    remove_snaps
+    update_system
+    setup_flathub
+    restore_firefox
+    configure_firefox
+    setup_bashrc
 
-sudo apt remove ubuntu-session yaru-theme-gnome-shell yaru-theme-gtk yaru-theme-icon yaru-theme-sound -y
-sudo apt remove gnome-*
-sudo apt autoremove -y
+    setup_display_manager
+    install_packages
+    build_st
+    cleanup_desktop
 
-echo "Done. Reboot if necessary"
+    ask_reboot
+}
+
+main
