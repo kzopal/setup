@@ -2,12 +2,23 @@
 
 source ubuntu-debullshit.sh
 
+remove_appcrash_popup
+disable_terminal_ads
+disable_ubuntu_report
 remove_snaps
 update_system
 setup_flathub
 restore_firefox
 
 echo "lightdm shared/default-x-display-manager select lightdm" | sudo debconf-set-selections
+
+#install lightdm non interactively
+sudo DEBIAN_FRONTEND=noninteractive apt install lightdm slick-greeter numlockx -y
+#uncomment next line if somthing breaks
+#echo -e "[Seat:*]\ngreeter-session=slick-greeter" | sudo tee /etc/lightdm/lightdm.conf
+
+#do this before removing all the gdm stuff
+sudo systemctl enable lightdm
 
 #add fastfetch ppa
 sudo add-apt-repository -y ppa:zhangsongcui3371/fastfetch
@@ -26,9 +37,6 @@ sudo apt install -y \
     htop \
     fastfetch
 
-#install lightdm non interactively
-sudo DEBIAN_FRONTEND=noninteractive apt install lightdm lightdm-gtk-greeter -y
-
 #st section
 
 #clone kzopal/st to a temporary directory
@@ -43,11 +51,11 @@ make
 sudo make clean install
 cd ~
 
-#do this before removing all the gdm stuff
-sudo systemctl enable lightdm
-
-#wipe gdm3
+#wipe gdm3 and old desktop
 sudo apt purge gdm3 -y || true
+
+sudo apt remove ubuntu-session yaru-theme-gnome-shell yaru-theme-gtk yaru-theme-icon yaru-theme-sound -y
+
 sudo apt autoremove -y
 
 echo "Done. Reboot if necessary"
