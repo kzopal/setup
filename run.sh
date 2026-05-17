@@ -4,15 +4,15 @@
 set -e
 
 # Download the ubuntu-debullshit script
-echo "Downloading ubuntu-debullshit.sh..."
-wget -qO ubuntu-debullshit.sh https://raw.githubusercontent.com/kzopal/setup/refs/heads/main/ubuntu-debullshit.sh
+echo "Downloading utils.sh..."
+wget -qO ubuntu-debullshit.sh https://raw.githubusercontent.com/kzopal/setup/refs/heads/main/utils.sh
 
 # Download your main setup script
 echo "Downloading main.sh..."
 wget -qO main.sh https://raw.githubusercontent.com/kzopal/setup/refs/heads/main/main.sh
 
 # Make both scripts executable
-chmod +x ubuntu-debullshit.sh main.sh
+chmod +x utils.sh main.sh
 
 # Run your main setup script
 echo "Starting the setup..."
