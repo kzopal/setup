@@ -6,21 +6,21 @@ It uses the ubuntu-debullshit script as a baseline to clean up the operating sys
 
 What this script does:
 
-1. Removes all snaps and blocks them from coming back.
+1. Removes all snaps and blocks them from coming back
 
-2. Sets up flathub for flatpak applications.
+2. Sets up flathub for flatpak applications
 
-3. Restores firefox as a regular package instead of a snap.
+3. Restores firefox as a regular package instead of a snap
 
-4. Updates the system packages.
+4. Updates the system packages
 
-5. Installs the i3 window manager and tools like htop and fastfetch.
+5. Installs the i3 window manager and tools like htop and fastfetch
 
-6. Installs development tools and the JetBrains Mono font.
+6. Installs development tools and the JetBrains Mono font
 
-7. Clones and compiles the st terminal from github.
+7. Clones and compiles the st terminal from my github repo (kzopal/st)
 
-8. Replaces the gdm3 display manager with lightdm to save resources.
+8. Replaces the gdm3 display manager with lightdm to save resources
 
 How to use it:
 
