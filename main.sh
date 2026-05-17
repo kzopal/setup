@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 #allegedly a good practice
-set -euo pipefail
+set -e
 
 source ubuntu-debullshit.sh
 
