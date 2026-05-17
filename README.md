@@ -26,7 +26,7 @@ How to use it:
 
 Open your terminal on a fresh Ubuntu install and run:
 
-  sudo bash -c "$(wget -qO- https://raw.githubusercontent.com/kzopal/setup/main/run.sh)"
+    sudo bash -c "$(wget -qO- https://raw.githubusercontent.com/kzopal/setup/main/run.sh)"
 
 This command will automatically download run.sh, which pulls down the required ubuntu-debullshit.sh and main.sh scripts, makes them executable, and starts the installation.
 
