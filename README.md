@@ -33,3 +33,9 @@ This command will automatically download run.sh, which pulls down the required u
 After the script finishes, reboot your computer so the changes take effect and you can log into i3.
 
 Warning: This script makes big changes to the system like removing gdm3 and snaps. It is tailored for my personal preferences, so use it at your own risk.
+
+# TODO
+
+automatically add arkenfox user.js and ublock orgin to firefox
+firefox darkmode and tokyo night theme (millav)
+custom bashrc (probably optional)
