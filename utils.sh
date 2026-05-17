@@ -25,10 +25,10 @@ remove_snaps() {
         rm -rf $userpath/snap
     done
     cat <<-EOF | tee /etc/apt/preferences.d/nosnap.pref
-	Package: snapd
-	Pin: release a=*
-	Pin-Priority: -10
-	EOF
+    Package: snapd
+    Pin: release a=*
+    Pin-Priority: -10
+EOF
 }
 
 disable_terminal_ads() {
@@ -38,10 +38,6 @@ disable_terminal_ads() {
 
 update_system() {
     apt update && apt upgrade -y
-}
-
-cleanup() {
-    apt autoremove -y
 }
 
 setup_flathub() {
@@ -55,36 +51,6 @@ gsettings_wrapper() {
         sudo apt install dbus-x11 -y
     fi
     sudo -Hu $(logname) dbus-launch gsettings "$@"
-}
-
-set_fonts() {
-	gsettings_wrapper set org.gnome.desktop.interface monospace-font-name "Monospace 10"
-}
-
-
-install_adwgtk3() {    
-    wget -O /tmp/adw-gtk3.tar.xz https://github.com/lassekongo83/adw-gtk3/releases/download/v5.10/adw-gtk3v5.10.tar.xz
-    tar -xf /tmp/adw-gtk3.tar.xz -C /usr/share/themes/
-    if command -v flatpak; then
-        flatpak install -y runtime/org.gtk.Gtk3theme.adw-gtk3-dark
-        flatpak install -y runtime/org.gtk.Gtk3theme.adw-gtk3
-    fi
-    if [ "$(gsettings_wrapper get org.gnome.desktop.interface color-scheme | tail -n 1)" == ''\''prefer-dark'\''' ]; then
-        gsettings_wrapper set org.gnome.desktop.interface gtk-theme adw-gtk3-dark
-        gsettings_wrapper set org.gnome.desktop.interface color-scheme prefer-dark
-    else
-        gsettings_wrapper set org.gnome.desktop.interface gtk-theme adw-gtk3
-    fi
-}
-
-install_icons() {
-    apt install adwaita-icon-theme -y
-    apt install git -y
-    git clone https://github.com/somepaulo/MoreWaita.git /tmp/MoreWaita
-    /tmp/MoreWaita/install.sh
-    apt install adwaita-icon-theme -y
-    gsettings_wrapper set org.gnome.desktop.interface icon-theme MoreWaita
-    gsettings_wrapper set org.gnome.desktop.interface accent-color blue
 }
 
 restore_firefox() {
@@ -166,6 +132,7 @@ PROFILES_EOF
 
     msg "Firefox configured with arkenfox user.js, uBlock Origin, and Tokyo Night theme."
 }
+
 setup_bashrc() {
     local real_user real_home
 
@@ -213,7 +180,7 @@ ask_reboot() {
     done
 }
 
-#auto-clear the screen too
+# Auto-clear UI helper
 msg() {
     clear -x
     tput setaf 2
@@ -231,10 +198,9 @@ check_root_user() {
     if [ "$(id -u)" != 0 ]; then
         echo 'Please run the script as root!'
         echo 'We need to do administrative tasks'
-        exit
+        exit 1
     fi
 }
 
-enable_appindicator() {
-    gsettings_wrapper set org.gnome.shell enabled-extensions "['ubuntu-appindicators@ubuntu.com']"
-}
+# Automatically enforce root validation right out of the gate
+check_root_user
