@@ -211,7 +211,9 @@ ask_reboot() {
     done
 }
 
+#auto-clear the screen too
 msg() {
+    clear -x
     tput setaf 2
     echo "[*] $1"
     tput sgr0
