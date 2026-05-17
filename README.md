@@ -2,10 +2,10 @@
 
 > [!CAUTION]
 > This script makes significant changes to the system and is tailored for my
-> personal preferences and is designed to run on a fresh install of Ubuntu 24.04.04. Use it at your own risk.
+> personal preferences and is designed to run on a fresh install of Ubuntu 24.04. Use it at your own risk.
 
 A heavily modified fork of
-[ubuntu-debullshit](https://github.com/polkaulfield/ubuntu-debullshit) that strips a fresh Ubuntu install down and sets up a minimal, keyboard-driven
+[ubuntu-debullshit](https://github.com/polkaulfield/ubuntu-debullshit) that strips a fresh Ubuntu install down and sets up a minimal bloatless
 environment built around i3 and [kzopal/st](https://github.com/kzopal/st).
 
 ## What it does
