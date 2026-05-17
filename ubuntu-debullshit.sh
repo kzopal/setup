@@ -100,11 +100,19 @@ Pin-Priority: 1000
 }
 
 configure_firefox() {
-    local real_user real_home firefox_dir
+    local real_user real_home firefox_dir profiles_ini profile_path
 
+    # Identify the target user
     real_user="${SUDO_USER:-$(logname 2>/dev/null || echo "$USER")}"
     real_home="$(eval echo "~$real_user")"
+    
+    firefox_dir="$real_home/.mozilla/firefox"
+    profiles_ini="$firefox_dir/profiles.ini"
+    
+    # Standard Firefox relative path convention
+    profile_path="Profiles/default-release"
 
+    # 1. System-wide Configurations
     msg "Setting up Firefox distribution policies..."
     mkdir -p /usr/lib/firefox/distribution
 
@@ -132,38 +140,32 @@ POLICIES_EOF
 pref("ui.systemUsesDarkTheme", 1);
 SYSPREF_EOF
 
-    msg "Downloading arkenfox user.js..."
-    firefox_dir="$real_home/.mozilla/firefox"
-    mkdir -p "$firefox_dir"
+    # 2. Fresh Install Profile Setup
+    msg "Creating fresh Firefox profile structure..."
+    mkdir -p "$firefox_dir/$profile_path"
 
-    local profiles_ini="$firefox_dir/profiles.ini"
-    local profile_path=""
-
-    if [ -f "$profiles_ini" ]; then
-        profile_path=$(grep -E "^Path=" "$profiles_ini" | head -1 | cut -d= -f2)
-    fi
-
-    if [ -z "$profile_path" ]; then
-        profile_path="default-release"
-        mkdir -p "$firefox_dir/$profile_path"
-        cat > "$profiles_ini" << PROFILES_EOF
+    # Using a quoted delimiter 'PROFILES_EOF' to prevent any Bash evaluation mishaps, 
+    # and sticking to standard relative pathing that Firefox natively expects.
+    cat > "$profiles_ini" << 'PROFILES_EOF'
 [General]
 StartWithLastProfile=1
 
 [Profile0]
 Name=default
 IsRelative=1
-Path=$profile_path
+Path=Profiles/default-release
 Default=yes
 PROFILES_EOF
-    fi
 
+    # 3. Download arkenfox user.js
+    msg "Downloading arkenfox user.js..."
     wget -qO "$firefox_dir/$profile_path/user.js" https://raw.githubusercontent.com/arkenfox/user.js/master/user.js
-    chown -R "$real_user:$real_user" "$firefox_dir" 2>/dev/null || true
+
+    # 4. Fix Permissions wholesale for the fresh directory
+    chown -R "$real_user:$real_user" "$real_home/.mozilla"
 
     msg "Firefox configured with arkenfox user.js, uBlock Origin, and Tokyo Night theme."
 }
-
 setup_bashrc() {
     local real_user real_home
 
