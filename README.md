@@ -1,4 +1,5 @@
 # setup
+
 This is a bash script to debloat and install my preferred software on a fresh install of Ubuntu 24.04.04 LTS.
 
 It uses the ubuntu-debullshit script as a baseline to clean up the operating system.
@@ -6,17 +7,24 @@ It uses the ubuntu-debullshit script as a baseline to clean up the operating sys
 What this script does:
 
     Removes all snaps and blocks them from coming back.
+
     Sets up flathub for flatpak applications.
+
     Restores firefox as a regular package instead of a snap.
+
     Updates the system packages.
+
     Installs the i3 window manager and tools like htop and fastfetch.
+
     Installs development tools and the JetBrains Mono font.
+
     Clones and compiles the st terminal from github.
+
     Replaces the gdm3 display manager with lightdm to save resources.
 
 How to use it:
 
-Open your terminal on a fresh Ubuntu install and run:
+You do not need to download anything manually. Open your terminal on a fresh Ubuntu install and run this single command:
 
 sudo bash -c "$(wget -qO- https://raw.githubusercontent.com/kzopal/setup/main/run.sh)"
 
