@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 
-#allegedly a good practice
-set -e
-
 source ubuntu-debullshit.sh
 
 remove_snaps
