@@ -53,21 +53,28 @@ cleanup_desktop() {
 }
 
 main() {
+    msg "Stripping Ubuntu bloat..."
     remove_appcrash_popup
     disable_terminal_ads
     disable_ubuntu_report
     remove_snaps
+
+    msg "Configuring system and browser..."
     update_system
     setup_flathub
     restore_firefox
     configure_firefox
     setup_bashrc
 
+    msg "Installing core packages and i3..."
     setup_display_manager
     install_packages
+
+    msg "Building st terminal and removing GNOME..."
     build_st
     cleanup_desktop
 
+    msg "Setup complete!"
     ask_reboot
 }
 
