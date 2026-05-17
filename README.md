@@ -26,7 +26,7 @@ environment built around i3 and [kzopal/st](https://github.com/kzopal/st).
 ```
 setup/
 ├── run.sh       # Downloads and launches everything
-├── deploy.sh    # Main deployment controller
+├── main.sh      # Main controller
 └── utils.sh     # All debloating and config functions
 ```
 
@@ -38,6 +38,6 @@ On a fresh Ubuntu 24.04 install:
 sudo bash -c "$(wget -qO- kzopal.github.io/setup/run.sh)"
 ```
 
-run.sh downloads utils.sh and deploy.sh, makes them executable, and
+run.sh downloads utils.sh and main.sh, makes them executable, and
 starts the installation. Reboot when it's done to apply all changes and log
 into i3.
