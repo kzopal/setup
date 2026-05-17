@@ -16,11 +16,15 @@ What this script does:
 
 5. Installs the i3 window manager and tools like htop and fastfetch
 
-6. Installs development tools and the JetBrains Mono font
+6. Installs some development tools and the JetBrains Mono font for st
 
 7. Clones and compiles the st terminal from my github repo (kzopal/st)
 
-8. Replaces the gdm3 display manager with lightdm to save resources
+8. Replaces the gdm3 display manager with lightdm
+
+9. Configures Firefox with the arkenfox user.js, uBlock Origin, dark mode, and Tokyo Night theme
+
+10. Installs custom .bashrc with cool prompt
 
 How to use it:
 
@@ -33,9 +37,3 @@ This command will automatically download run.sh, which pulls down the required u
 After the script finishes, reboot your computer so the changes take effect and you can log into i3.
 
 Warning: This script makes big changes to the system like removing gdm3 and snaps. It is tailored for my personal preferences, so use it at your own risk.
-
-# TODO
-
-automatically add arkenfox user.js and ublock orgin to firefox
-firefox darkmode and tokyo night theme (millav)
-custom bashrc (probably optional)
