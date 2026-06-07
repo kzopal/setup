@@ -14,7 +14,7 @@ environment built around i3 and [kzopal/st](https://github.com/kzopal/st).
 2. Sets up Flathub for Flatpak
 3. Restores Firefox as a native .deb
 4. Updates all system packages
-5. Installs i3, htop, fastfetch, and supporting tools
+5. Installs i3, htop, fastfetch, and other tools
 6. Installs dev tools and JetBrains Mono
 7. Clones and compiles [kzopal/st](https://github.com/kzopal/st) from source
 8. Replaces GDM3 with LightDM
